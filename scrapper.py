@@ -3,10 +3,10 @@ import mongo
 import datetime as dt
 import time
 
-ACCESS_TOKEN = '1132007433864396800-2CKMMkc9qGv7TE7RaE1JeG4q0xFydA'
-ACCESS_SECRET = 'ARou1yzchCVj75ixPMEaVgrf4oBXZAZRbEV8MQui0N82t'
-CONSUMER_KEY = '1xWh5vv02vWhEUbDsRcEK8u2H'
-CONSUMER_SECRET = 'HWDtbRreyL8F1m9r6Uj406qTWWcK3Y9VcfDv9qMMFrEIdW4Ni8'
+ACCESS_TOKEN = '1132007433864396800-ejwacZCKOkHrwdlkAnoetGydIjAFyn'
+ACCESS_SECRET = 'GZbnz4j2PieilPn8dwP9urmEbnI4MxfhJk4QdzZ54f9ET'
+CONSUMER_KEY = 'VbCl8NHlJoJa7GhdEqqONLcRH'
+CONSUMER_SECRET = '2rNyTkqQU3kiKV5et3IN8YTQSUBlYfM8eYAZK8WRlD7TEw3oWW'
 
 # Setup access to API
 def connect_to_twitter_OAuth():
@@ -16,9 +16,6 @@ def connect_to_twitter_OAuth():
     api = tweepy.API(auth)
     return api
 
-
-# Create API object
-api = connect_to_twitter_OAuth()
 
 # fuction to extract data from tweet object
 def store_with_attributes(tweet_object, collection):
@@ -50,14 +47,24 @@ def store_with_attributes(tweet_object, collection):
                           'user':user['id']}, collection)
         mongo.store(user, 'users')
 
+# Create API object
+api = connect_to_twitter_OAuth()
+
+#Setup Users
+mongo.setup_users()
+
 query = 'FMI'
 max_tweets = 10
 argentina = api.geo_search(query="Argentina", granularity="country")
 argentina_id = argentina[0].id
+
+# Setup Collection
+mongo.setup(query)
+
 while True:
     try:
         searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets' + ' place:' + argentina_id, tweet_mode='extended').items(max_tweets)]
-        store_with_attributes(searched_tweets, query + 'test')
+        store_with_attributes(searched_tweets, query)
     except tweepy.TweepError:
         print('exception raised, waiting 15 minutes to continue')
         print('(until:', dt.datetime.now()+dt.timedelta(minutes=15), ')')
