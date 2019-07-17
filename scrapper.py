@@ -43,7 +43,7 @@ def store_with_attributes(tweet_object, collection):
                           'reply_to_status':reply_to_status, 
                           'reply_to_user':reply_to_user,
                           'retweets':retweets,
-                          'favorites':favorites
+                          'favorites':favorites,
                           'user':user['id']}, collection)
         mongo.store(user, 'users')
 
