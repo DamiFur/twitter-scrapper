@@ -45,7 +45,10 @@ def store_with_attributes(tweet_object, collection):
                           'retweets':retweets,
                           'favorites':favorites,
                           'user':user['id']}, collection)
-        mongo.store(user, 'users')
+        try:
+            mongo.store(user, 'users')
+        except Exception as e:
+            continue
 
 # Create API object
 api = connect_to_twitter_OAuth()
