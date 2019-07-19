@@ -14,3 +14,8 @@ def setup_users():
 
 def store(tweet, collection):
     db[collection].insert_one(tweet)
+
+def check_if_exists(text, collection):
+    if db[collection].count({"text": text}) > 0:
+        return True
+    return False

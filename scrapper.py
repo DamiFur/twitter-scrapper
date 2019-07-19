@@ -34,21 +34,23 @@ def store_with_attributes(tweet_object, collection):
         retweets = tweet.retweet_count # number of times this tweet retweeted
         favorites = tweet.favorite_count # number of time this tweet liked
         user = tweet._json
-        # append attributes to list
-        mongo.store({'tweet_id':tweet_id, 
-                          'text':text, 
-                          'favorite_count':favorite_count,
-                          'retweet_count':retweet_count,
-                          'created_at':created_at, 
-                          'reply_to_status':reply_to_status, 
-                          'reply_to_user':reply_to_user,
-                          'retweets':retweets,
-                          'favorites':favorites,
-                          'user':user['id']}, collection)
-        try:
-            mongo.store(user, 'users')
-        except Exception as e:
-            continue
+        
+        if not mongo.check_if_exists(text, collection):
+            # append attributes to list
+            mongo.store({'tweet_id':tweet_id, 
+                              'text':text, 
+                              'favorite_count':favorite_count,
+                              'retweet_count':retweet_count,
+                              'created_at':created_at, 
+                              'reply_to_status':reply_to_status, 
+                              'reply_to_user':reply_to_user,
+                              'retweets':retweets,
+                              'favorites':favorites,
+                              'user':user['id']}, collection)
+            try:
+                mongo.store(user, 'users')
+            except Exception as e:
+                continue
 
 # Create API object
 api = connect_to_twitter_OAuth()
@@ -57,14 +59,14 @@ api = connect_to_twitter_OAuth()
 mongo.setup_users()
 
 query = 'FMI'
-max_tweets = 10
+max_tweets = 1000
 argentina = api.geo_search(query="Argentina", granularity="country")
 argentina_id = argentina[0].id
 
 # Setup Collection
 mongo.setup(query)
 
-while True:
+for n in range(1):
     try:
         searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets' + ' place:' + argentina_id, tweet_mode='extended').items(max_tweets)]
         store_with_attributes(searched_tweets, query)
