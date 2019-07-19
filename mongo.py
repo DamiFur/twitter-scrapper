@@ -9,7 +9,8 @@ def setup(collection):
         db[collection].create_index(
             [('full_text', pymongo.TEXT)],
             default_language='spanish', unique=True)
-
+    except:
+        print("index already created")
 
 def setup_users():
     db.users.create_index("id", unique=True, dropDups=True)
