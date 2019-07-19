@@ -62,15 +62,15 @@ mongo.setup_users()
 
 query = 'FMI'
 max_tweets = 1000
-argentina = api.geo_search(query="Argentina", granularity="country")
-argentina_id = argentina[0].id
+#argentina = api.geo_search(query="Argentina", granularity="country")
+#argentina_id = argentina[0].id
 
 # Setup Collection
 mongo.setup(query)
 
 while True:
     try:
-        searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets' + ' place:' + argentina_id, tweet_mode='extended').items(max_tweets)]
+        searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets', tweet_mode='extended').items(max_tweets)]
         store_with_attributes(searched_tweets, query)
     except tweepy.TweepError:
         print('exception raised, waiting 15 minutes to continue')
