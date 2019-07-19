@@ -10,6 +10,7 @@ def setup(collection):
             [('full_text', pymongo.TEXT)],
             default_language='spanish', unique=True)
 
+
 def setup_users():
     db.users.create_index("id", unique=True, dropDups=True)
 
