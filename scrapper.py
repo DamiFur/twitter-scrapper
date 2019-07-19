@@ -35,7 +35,7 @@ def store_with_attributes(tweet_object, collection):
         favorites = tweet.favorite_count # number of time this tweet liked
         user = tweet._json
         
-        if not mongo.check_if_exists(text, collection):
+        try:
             # append attributes to list
             mongo.store({'tweet_id':tweet_id, 
                               'text':text, 
@@ -47,10 +47,12 @@ def store_with_attributes(tweet_object, collection):
                               'retweets':retweets,
                               'favorites':favorites,
                               'user':user['id']}, collection)
-            try:
-                mongo.store(user, 'users')
-            except Exception as e:
-                continue
+        except Exception:
+            continue
+        try:
+            mongo.store(user, 'users')
+        except Exception as e:
+            continue
 
 # Create API object
 api = connect_to_twitter_OAuth()
