@@ -68,7 +68,7 @@ argentina_id = argentina[0].id
 # Setup Collection
 mongo.setup(query)
 
-for n in range(1):
+while True:
     try:
         searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets' + ' place:' + argentina_id, tweet_mode='extended').items(max_tweets)]
         store_with_attributes(searched_tweets, query)
