@@ -7,8 +7,8 @@ db = client["tweets"]
 def setup(collection):
     try:
         db[collection].create_index(
-            [('full_text', pymongo.TEXT)],
-            default_language='spanish', unique=True)
+            [('text', pymongo.TEXT)],
+            default_language='spanish')
     except:
         print("index already created")
 
@@ -25,11 +25,17 @@ def check_if_exists(text, collection):
 
 def removeDuplicates(collection):
     db[collection + "_unique"].create_index(
-        [('full_text', pymongo.TEXT)],
-        default_language='spanish', unique=True)
-
+        [('text', pymongo.TEXT)],
+        default_language='spanish')
+    removed = 0
     for tweet in db[collection].find():
         try:
-            store(tweet, collection + "_unique")
+            if not check_if_exists(tweet['text'], collection + "_unique"):
+                store(tweet, collection + "_unique")
+            else:
+                removed += 1
         except Exception as e:
+            print(e)
+            print(tweet)
             continue
+    print("Removed " + str(removed) + " tweets")
