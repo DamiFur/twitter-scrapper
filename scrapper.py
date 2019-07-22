@@ -2,11 +2,16 @@ import tweepy
 import mongo 
 import datetime as dt
 import time
+from tweepyrate import fetch_tweets, create_apps
+
+
+
 
 ACCESS_TOKEN = '1132007433864396800-ejwacZCKOkHrwdlkAnoetGydIjAFyn'
 ACCESS_SECRET = 'GZbnz4j2PieilPn8dwP9urmEbnI4MxfhJk4QdzZ54f9ET'
 CONSUMER_KEY = 'VbCl8NHlJoJa7GhdEqqONLcRH'
 CONSUMER_SECRET = '2rNyTkqQU3kiKV5et3IN8YTQSUBlYfM8eYAZK8WRlD7TEw3oWW'
+
 
 # Setup access to API
 def connect_to_twitter_OAuth():

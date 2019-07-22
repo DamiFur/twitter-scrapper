@@ -22,3 +22,14 @@ def check_if_exists(text, collection):
     if db[collection].count({"text": text}) > 0:
         return True
     return False
+
+def removeDuplicates(collection):
+    db[collection + "_unique"].create_index(
+        [('full_text', pymongo.TEXT)],
+        default_language='spanish', unique=True)
+
+    for tweet in db[collection].find({})
+        try:
+            store(tweet, collection + "_unique")
+        except Exception as e:
+            continue
