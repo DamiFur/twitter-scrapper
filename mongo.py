@@ -28,7 +28,7 @@ def removeDuplicates(collection):
         [('full_text', pymongo.TEXT)],
         default_language='spanish', unique=True)
 
-    for tweet in db[collection].find({})
+    for tweet in db[collection].find()
         try:
             store(tweet, collection + "_unique")
         except Exception as e:
