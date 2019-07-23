@@ -41,17 +41,18 @@ def store_with_attributes(tweet_object, collection):
         user = tweet._json
         
         try:
-            # append attributes to list
-            mongo.store({'tweet_id':tweet_id, 
-                              'text':text, 
-                              'favorite_count':favorite_count,
-                              'retweet_count':retweet_count,
-                              'created_at':created_at, 
-                              'reply_to_status':reply_to_status, 
-                              'reply_to_user':reply_to_user,
-                              'retweets':retweets,
-                              'favorites':favorites,
-                              'user':user['id']}, collection)
+            if not mongo.check_if_exists(text, collection):
+                # append attributes to list
+                mongo.store({'tweet_id':tweet_id, 
+                                  'text':text, 
+                                  'favorite_count':favorite_count,
+                                  'retweet_count':retweet_count,
+                                  'created_at':created_at, 
+                                  'reply_to_status':reply_to_status, 
+                                  'reply_to_user':reply_to_user,
+                                  'retweets':retweets,
+                                  'favorites':favorites,
+                                  'user':user['id']}, collection)
         except Exception:
             continue
         try:
@@ -65,7 +66,7 @@ api = connect_to_twitter_OAuth()
 #Setup Users
 mongo.setup_users()
 
-query = 'FMI'
+query = 'Macri'
 max_tweets = 1000
 #argentina = api.geo_search(query="Argentina", granularity="country")
 #argentina_id = argentina[0].id
