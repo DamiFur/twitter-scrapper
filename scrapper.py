@@ -100,7 +100,7 @@ def collect_with_query_and_users(queries, mode="all"):
     fetcher = tweepyrate.collector.Fetcher(apps, 10, store_with_attributes, 1000)
     # setup de mongo
     for query in queries:
-        positive_usetweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 60, True, positive_users, None, "all", **args_for_positive)rs = UserCollector(True, query).collect_users()
+        positive_users = UserCollector(True, query).collect_users()
         negative_users = UserCollector(False, query).collect_users()
 
         mongo.setup(query)
