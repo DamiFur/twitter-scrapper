@@ -131,7 +131,7 @@ def collect_with_query_and_users(queries, mode="all"):
 
         collector_negative.start()
         collector_negative_new.start()
-        collector_positive_past.start()
+        collector_negative_past.start()
         # agregar log de 1 - nombre de la app que está usando. Cuantos twitters consiguió y de qué tipo (usuario pos o neg o todos)
         # thread_for_all()
         # thread_for_positive()
