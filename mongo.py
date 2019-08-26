@@ -2,7 +2,7 @@ import pymongo
 
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 
-db = client["tweets"]
+db = client["tweet-stands"]
 
 def setup(collection):
     try:
@@ -12,14 +12,20 @@ def setup(collection):
     except:
         print("index already created")
 
+def get_last_tweet_id(collection):
+    tweet = db[collection].find_one({},sort=[("tweet_id", pymongo.DESCENDING)])
+
+def get_first_tweet_id(collection):
+    tweet = db[collection].find_one({},sort=[("tweet_id", pymongo.ASCENDING)])
+
 def setup_users():
     db.users.create_index("id", unique=True, dropDups=True)
 
 def store(tweet, collection):
     db[collection].insert_one(tweet)
 
-def check_if_exists(text, collection):
-    if db[collection].count({"text": text}) > 0:
+def check_if_exists(query, collection):
+    if db[collection].count(query) > 0:
         return True
     return False
 

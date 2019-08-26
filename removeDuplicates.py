@@ -1,3 +1,3 @@
 import mongo
 
-mongo.removeDuplicates('servicio civico voluntario')
+mongo.removeDuplicates('Macri-Positive')

@@ -2,28 +2,25 @@ import tweepy
 import mongo 
 import datetime as dt
 import time
-from tweepyrate import fetch_tweets, create_apps
+import json
+from tweepyrate import tweepyrate
+import fire
 
 
 
 
-ACCESS_TOKEN = '1132007433864396800-ejwacZCKOkHrwdlkAnoetGydIjAFyn'
-ACCESS_SECRET = 'GZbnz4j2PieilPn8dwP9urmEbnI4MxfhJk4QdzZ54f9ET'
-CONSUMER_KEY = 'VbCl8NHlJoJa7GhdEqqONLcRH'
-CONSUMER_SECRET = '2rNyTkqQU3kiKV5et3IN8YTQSUBlYfM8eYAZK8WRlD7TEw3oWW'
+class UserCollector:
+    def __init__(self, isPositive, query):
+        self.position = "positive" if isPositive else "negative"
+        self.query = query
 
-
-# Setup access to API
-def connect_to_twitter_OAuth():
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
-
-    api = tweepy.API(auth)
-    return api
-
+    def collect_users(self):
+        with open("config/{}_users_{}.json".format(self.query, self.position)) as f:
+            return json.load(f)
 
 # fuction to extract data from tweet object
 def store_with_attributes(tweet_object, collection):
+    #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
     # loop through tweet objects
     for tweet in tweet_object:
         tweet_id = tweet.id # unique integer identifier for tweet
@@ -38,10 +35,9 @@ def store_with_attributes(tweet_object, collection):
         reply_to_user = tweet.in_reply_to_screen_name # if reply original tweetes screenname
         retweets = tweet.retweet_count # number of times this tweet retweeted
         favorites = tweet.favorite_count # number of time this tweet liked
-        user = tweet._json
-        
+        user = tweet.user._json
         try:
-            if not mongo.check_if_exists(text, collection):
+            if not mongo.check_if_exists({"text": text}, collection):
                 # append attributes to list
                 mongo.store({'tweet_id':tweet_id, 
                                   'text':text, 
@@ -52,33 +48,94 @@ def store_with_attributes(tweet_object, collection):
                                   'reply_to_user':reply_to_user,
                                   'retweets':retweets,
                                   'favorites':favorites,
-                                  'user':user['id']}, collection)
-        except Exception:
+                                  'user':user['id'],
+                                  'user_name':user['screen_name']}, collection)
+        except Exception as e:
+            print("Exception storing in mongo: {}".format(str(e)))
             continue
         try:
-            mongo.store(user, 'users')
+            if not mongo.check_if_exists({"id": user["id"]}, 'users'):
+                mongo.store(user, 'users')
         except Exception as e:
+            print(e)
             continue
 
-# Create API object
-api = connect_to_twitter_OAuth()
+def get_query_args(collection, query, mode, ignore_ids):
+    args = {
+        "q": query,
+        "mode": mode,
+    }
+    if ignore_ids:
+        return args
+    elif mode == "new":
+        # Search for last tweet of this country, so we look for tweets
+        # newer than it
+        tweet = collection.find_one(
+            {},
+            sort=[("tweet_id", pymongo.DESCENDING)])
 
-#Setup Users
-mongo.setup_users()
+        if tweet:
+            args["since_id"] = tweet["id"]
+    elif mode == "past":
+        # Search for first tweet of this country, so we look tweets older than
+        # it
+        tweet = collection.find_one(
+            {},
+            sort=[("tweet_id", pymongo.ASCENDING)])
 
-query = 'Macri'
-max_tweets = 1000
-#argentina = api.geo_search(query="Argentina", granularity="country")
-#argentina_id = argentina[0].id
+        if tweet:
+            args["max_id"] = tweet["id"]
+            print("Tweet with max_id {} found".format(args["max_id"]))
+        else:
+            print("No tweet found with this search")
+    else:
+        raise ValueError("mode should be new or past")
 
-# Setup Collection
-mongo.setup(query)
+    return args
 
-while True:
-    try:
-        searched_tweets = [status for status in tweepy.Cursor(api.search, q=query + ' -filter:retweets', tweet_mode='extended').items(max_tweets)]
-        store_with_attributes(searched_tweets, query)
-    except tweepy.TweepError:
-        print('exception raised, waiting 15 minutes to continue')
-        print('(until:', dt.datetime.now()+dt.timedelta(minutes=15), ')')
-        time.sleep(15*60)
+
+
+def collect_with_query_and_users(queries, mode="all"):
+    apps = tweepyrate.create_apps("config/my_apps.json")
+    fetcher = tweepyrate.collector.Fetcher(apps, 10, store_with_attributes, 1000)
+    # setup de mongo
+    for query in queries:
+        positive_usetweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 60, True, positive_users, None, "all", **args_for_positive)rs = UserCollector(True, query).collect_users()
+        negative_users = UserCollector(False, query).collect_users()
+
+        mongo.setup(query)
+        args_for_all = get_query_args(query, query, "all", True)
+        collector_all = tweepyrate.collector.Collector(store_with_attributes, fetcher, 60, **args_for_all)
+        collector_all_past = tweepyrate.collector.PastTweetsCollector(store_with_attributes, fetcher, 1, **args_for_all)
+        collector_all_new = tweepyrate.collector.NewTweetsCollector(store_with_attributes, fetcher, 1, **args_for_all)
+        
+        mongo.setup(query + "-Positive")
+        args_for_positive = get_query_args(query + "-Positive", query, "all", True)
+        collector_positive = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 60, True, positive_users, None, "all", **args_for_positive)
+        collector_positive_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 10, True, positive_users, mongo.get_last_tweet_id(query + "-Positive"), "new", **args_for_positive)
+        collector_positive_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 10, True, positive_users, mongo.get_first_tweet_id(query + "-Positive"), "past", **args_for_positive)
+
+        mongo.setup(query + "-Negative")
+        args_for_negative = get_query_args(query + "-Negative", query, "all", True)
+        collector_negative = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 30, False, negative_users, None, "all", **args_for_negative)
+        collector_negative_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 10, True, negative_users, mongo.get_last_tweet_id(query + "-Negative"), "new", **args_for_positive)
+        collector_negative_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 10, True, negative_users, mongo.get_first_tweet_id(query + "-Negative"), "past", **args_for_positive)
+
+        collector_all.start()
+        collector_positive.start()
+        collector_negative.start()
+
+        collector_positive.start()
+        collector_positive_new.start()
+        collector_positive_past.start()
+
+        collector_negative.start()
+        collector_negative_new.start()
+        collector_positive_past.start()
+        # agregar log de 1 - nombre de la app que está usando. Cuantos twitters consiguió y de qué tipo (usuario pos o neg o todos)
+        # thread_for_all()
+        # thread_for_positive()
+        # thread_for_negative()
+
+if __name__ == '__main__':
+    fire.Fire(collect_with_query_and_users)
