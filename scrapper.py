@@ -122,8 +122,8 @@ def collect_with_query_and_users(queries, mode="all"):
         collector_negative_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 10, True, negative_users, mongo.get_first_tweet_id(query + "-Negative"), "past", **args_for_positive)
 
         collector_all.start()
-        collector_positive.start()
-        collector_negative.start()
+        collector_all_new.start()
+        collector_all_past.start()
 
         collector_positive.start()
         collector_positive_new.start()
