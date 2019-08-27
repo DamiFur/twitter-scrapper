@@ -19,7 +19,7 @@ class UserCollector:
             return json.load(f)
 
 # fuction to extract data from tweet object
-def store_with_attributes(tweet_object, collection):
+def store_with_attributes(tweet_object, query, collection):
     #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
     # loop through tweet objects
     for tweet in tweet_object:
@@ -37,7 +37,7 @@ def store_with_attributes(tweet_object, collection):
         favorites = tweet.favorite_count # number of time this tweet liked
         user = tweet.user._json
         try:
-            if not mongo.check_if_exists({"text": text}, collection):
+            if (not mongo.check_if_exists({"text": text}, collection)) and (query in text):
                 # append attributes to list
                 mongo.store({'tweet_id':tweet_id, 
                                   'text':text, 
