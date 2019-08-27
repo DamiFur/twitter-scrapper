@@ -22,6 +22,7 @@ class UserCollector:
 def store_with_attributes(tweet_object, query, collection):
     #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
     # loop through tweet objects
+    stored = 0
     for tweet in tweet_object:
         tweet_id = tweet.id # unique integer identifier for tweet
         try:
@@ -50,6 +51,7 @@ def store_with_attributes(tweet_object, query, collection):
                                   'favorites':favorites,
                                   'user':user['id'],
                                   'user_name':user['screen_name']}, collection)
+                stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
             continue
@@ -59,6 +61,7 @@ def store_with_attributes(tweet_object, query, collection):
         except Exception as e:
             print(e)
             continue
+        print("Stored {} tweets for query {} in collection {}".format(str(stored), query, collection))
 
 def get_query_args(collection, query, mode, ignore_ids):
     args = {
