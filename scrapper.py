@@ -61,7 +61,7 @@ def store_with_attributes(tweet_object, query, collection):
         except Exception as e:
             print(e)
             continue
-        print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
+    print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
 
 def get_query_args(collection, query, mode, ignore_ids):
     args = {
