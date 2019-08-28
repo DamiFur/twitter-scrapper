@@ -1,6 +1,5 @@
 import tweepy
 import mongo 
-import datetime as dt
 import time
 import json
 from tweepyrate import tweepyrate
