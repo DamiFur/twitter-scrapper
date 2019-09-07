@@ -102,8 +102,6 @@ def collect_with_query_and_users(queries, with_users=False, mode="all"):
     fetcher = tweepyrate.collector.Fetcher(apps, 10, store_with_attributes, 1000)
     # setup de mongo
     for query in queries:
-        positive_users = UserCollector(True, query).collect_users()
-        negative_users = UserCollector(False, query).collect_users()
 
         mongo.setup(query)
         args_for_all = get_query_args(query, query, "all", True)
@@ -112,6 +110,9 @@ def collect_with_query_and_users(queries, with_users=False, mode="all"):
         collector_all_new = tweepyrate.collector.NewTweetsCollector(store_with_attributes, fetcher, 1, **args_for_all)
         
         if with_users:
+            positive_users = UserCollector(True, query).collect_users()
+            negative_users = UserCollector(False, query).collect_users()
+            
             mongo.setup(query + "-Positive")
             args_for_positive = get_query_args(query + "-Positive", query, "all", True)
             collector_positive = tweepyrate.collector.ByUsersCollector(store_with_attributes, fetcher, 60, True, positive_users, None, "all", **args_for_positive)
