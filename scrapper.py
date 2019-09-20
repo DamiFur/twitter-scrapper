@@ -116,30 +116,31 @@ def collect_with_query_and_users(keyword, queries=[], with_users=False, mode="al
         collector_all_past = tweepyrate.collector.PastTweetsCollector(store_with_attributes, keyword, fetcher, 1, **args_for_all)
         collector_all_new = tweepyrate.collector.NewTweetsCollector(store_with_attributes, keyword, fetcher, 1, **args_for_all)
         
-        if with_users:
-            
-            args_for_positive = get_query_args(query + "-Positive", query, "all", True)
-            collector_positive = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 60, True, positive_users, None, "all", **args_for_positive)
-            collector_positive_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, positive_users, mongo.get_last_tweet_id(query + "-Positive"), "new", **args_for_positive)
-            collector_positive_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, positive_users, mongo.get_first_tweet_id(query + "-Positive"), "past", **args_for_positive)
-
-            args_for_negative = get_query_args(query + "-Negative", query, "all", True)
-            collector_negative = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 30, False, negative_users, None, "all", **args_for_negative)
-            collector_negative_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, negative_users, mongo.get_last_tweet_id(query + "-Negative"), "new", **args_for_positive)
-            collector_negative_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, negative_users, mongo.get_first_tweet_id(query + "-Negative"), "past", **args_for_positive)
-
         collector_all.start()
         collector_all_new.start()
         collector_all_past.start()
 
-        if with_users:
-            collector_positive.start()
-            collector_positive_new.start()
-            collector_positive_past.start()
+    if with_users:
+            
+        args_for_positive = get_query_args(query + "-Positive", query, "all", True)
+        collector_positive = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 60, True, positive_users, None, "all", **args_for_positive)
+        collector_positive_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, positive_users, mongo.get_last_tweet_id(query + "-Positive"), "new", **args_for_positive)
+        collector_positive_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, positive_users, mongo.get_first_tweet_id(query + "-Positive"), "past", **args_for_positive)
 
-            collector_negative.start()
-            collector_negative_new.start()
-            collector_negative_past.start()
+        args_for_negative = get_query_args(query + "-Negative", query, "all", True)
+        collector_negative = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 30, False, negative_users, None, "all", **args_for_negative)
+        collector_negative_new = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, negative_users, mongo.get_last_tweet_id(query + "-Negative"), "new", **args_for_positive)
+        collector_negative_past = tweepyrate.collector.ByUsersCollector(store_with_attributes, keyword, fetcher, 10, True, negative_users, mongo.get_first_tweet_id(query + "-Negative"), "past", **args_for_positive)
+
+    if with_users:
+        collector_positive.start()
+        collector_positive_new.start()
+        collector_positive_past.start()
+
+        collector_negative.start()
+        collector_negative_new.start()
+        collector_negative_past.start()
+
 
 
 if __name__ == '__main__':
