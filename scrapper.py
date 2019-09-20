@@ -106,8 +106,8 @@ def collect_with_query_and_users(keyword, queries=[], with_users=False, mode="al
     if with_users:
         positive_users = UserCollector(True, keyword).collect_users()
         negative_users = UserCollector(False, keyword).collect_users()
-        mongo.setup(keyword + "Positive")
-        mongo.setup(keyword + "Negative")
+        mongo.setup(keyword + "-Positive")
+        mongo.setup(keyword + "-Negative")
 
     for query in queries[1:len(queries)-1].split(","):
 
