@@ -100,7 +100,7 @@ def get_query_args(collection, query, mode, ignore_ids):
 def collect_with_query_and_users(keyword, queries=[], with_users=False, mode="all"):
     apps = tweepyrate.create_apps("config/my_apps.json")
     fetcher = tweepyrate.collector.Fetcher(apps[:len(apps)-2], 10, store_with_attributes, 1000)
-    fetcher_users = tweepyrate.collector.Fetcher(apps[len(apps)-2:], 10, store_with_attributes, 1000)
+    fetcher_users = tweepyrate.collector.Fetcher(apps[len(apps)-2:], 10, store_with_attributes, 100)
 
     # setup de mongo
 
