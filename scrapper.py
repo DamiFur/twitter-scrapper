@@ -37,7 +37,7 @@ def store_with_attributes(tweet_object, query, collection):
         favorites = tweet.favorite_count # number of time this tweet liked
         user = tweet.user._json
         try:
-            if (not mongo.check_if_exists({"text": text}, collection)) and (query in text.lower()):
+            if (not mongo.check_if_exists({"text": text}, collection)):
                 # append attributes to list
                 mongo.store({'tweet_id':tweet_id, 
                                   'text':text, 
