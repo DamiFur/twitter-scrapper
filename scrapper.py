@@ -111,7 +111,7 @@ def collect_with_query_and_users(keyword, queries=[], with_users=False, mode="al
         mongo.setup(keyword + "-Positive")
         mongo.setup(keyword + "-Negative")
 
-    for query in queries[1:len(queries)-1].split(","):
+    for query in queries:
 
         args_for_all = get_query_args(query, query, "all", True)
         collector_all = tweepyrate.collector.Collector(store_with_attributes, keyword, fetcher, 60, **args_for_all)
