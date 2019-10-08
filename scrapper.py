@@ -29,7 +29,7 @@ def store_with_attributes(tweet_object, query, collection):
                                   'user':user['id'],
                                   'query':query}, collection)
                 tweet_json = tweet._json
-                print("Guardamos un tweet")
+                print("Guardamos un tweet {}".format(tweet_json["id"]))
                 stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
