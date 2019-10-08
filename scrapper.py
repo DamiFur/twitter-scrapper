@@ -22,13 +22,13 @@ def store_with_attributes(tweet_object, query, collection, no_need_to_check=Fals
     stored = 0
     for tweet in tweet_object:
         user = tweet.user._json
+        tweet_json = tweet._json
         try:
             if no_need_to_check or (not mongo.check_if_exists({"tweet.id": tweet.id}, collection)):
                 # append attributes to list
-                mongo.store({'tweet':tweet._json,
+                mongo.store({'tweet':tweet_json,
                                   'user':user['id'],
                                   'query':query}, collection)
-                tweet_json = tweet._json
                 stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
