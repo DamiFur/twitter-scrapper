@@ -45,28 +45,28 @@ def store_with_attributes(tweet_object, query, collection):
         print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
 
 
-def get_query_args(collection, query, mode, ignore_ids):
+def get_query_args(collection, query, ignore_ids):
     args = {
         "q": query,
         "mode": mode,
     }
     if ignore_ids:
         return args
-    elif mode == "new":
+    else:
         # Search for last tweet of this country, so we look for tweets
         # newer than it
         tweet = collection.find_one(
             {},
-            sort=[("tweet_id", pymongo.DESCENDING)])
+            sort=[("tweet.id", pymongo.DESCENDING)])
 
         if tweet:
             args["since_id"] = tweet["id"]
-    elif mode == "past":
+            print("Tweet with min_id {} found".format(args["since_id"]))
         # Search for first tweet of this country, so we look tweets older than
         # it
         tweet = collection.find_one(
             {},
-            sort=[("tweet_id", pymongo.ASCENDING)])
+            sort=[("tweet.id", pymongo.ASCENDING)])
 
         if tweet:
             args["max_id"] = tweet["id"]
