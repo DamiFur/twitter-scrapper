@@ -13,10 +13,10 @@ def setup(collection):
         print("index already created")
 
 def get_last_tweet_id(query, collection):
-    return db[collection].find_one({"query": query},sort=[("tweet_id", pymongo.DESCENDING)])
+    return db[collection].find_one({"query": query},sort=[("tweet.id", pymongo.DESCENDING)])
 
 def get_first_tweet_id(query, collection):
-    return db[collection].find_one({"query": query},sort=[("tweet_id", pymongo.ASCENDING)])
+    return db[collection].find_one({"query": query},sort=[("tweet.id", pymongo.ASCENDING)])
 
 def setup_users():
     db.users.create_index("id", unique=True, dropDups=True)
