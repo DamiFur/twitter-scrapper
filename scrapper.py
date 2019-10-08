@@ -23,7 +23,7 @@ def store_with_attributes(tweet_object, query, collection):
     for tweet in tweet_object:
         user = tweet.user._json
         try:
-            if (not mongo.check_if_exists({"tweet.tweet_id": tweet.id}, collection)):
+            if (not mongo.check_if_exists({"tweet.id": tweet.id}, collection)):
                 # append attributes to list
                 mongo.store({'tweet':tweet._json,
                                   'user':user['id'],
