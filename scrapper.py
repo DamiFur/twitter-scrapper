@@ -48,7 +48,6 @@ def store_with_attributes(tweet_object, query, collection):
 def get_query_args(collection, query, ignore_ids):
     args = {
         "q": query,
-        "mode": mode,
     }
     if ignore_ids:
         return args
