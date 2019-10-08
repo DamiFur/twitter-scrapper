@@ -39,7 +39,7 @@ def store_with_attributes(tweet_object, query, collection):
             if not mongo.check_if_exists({"id": tweet_json["retweeted_status"]["user"]["id"]}, 'users'):
                 mongo.store(tweet_json["retweeted_status"]["user"], 'users')
         except Exception as e:
-            print(e)
+            print("Excepción guardando usuario: {}".format(e))
             continue
     print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
 
