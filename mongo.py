@@ -13,10 +13,10 @@ def setup(collection):
         print("index already created")
 
 def get_last_tweet_id(collection):
-    tweet = db[collection].find_one({},sort=[("tweet_id", pymongo.DESCENDING)])
+    return db[collection].find_one({"query": query},sort=[("tweet_id", pymongo.DESCENDING)])
 
-def get_first_tweet_id(collection):
-    tweet = db[collection].find_one({},sort=[("tweet_id", pymongo.ASCENDING)])
+def get_first_tweet_id(query, collection):
+    return db[collection].find_one({"query": query},sort=[("tweet_id", pymongo.ASCENDING)])
 
 def setup_users():
     db.users.create_index("id", unique=True, dropDups=True)
@@ -28,6 +28,7 @@ def check_if_exists(query, collection):
     if db[collection].count(query) > 0:
         return True
     return False
+
 
 def removeDuplicates(collection):
     db[collection + "_unique"].create_index(

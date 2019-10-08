@@ -55,18 +55,13 @@ def get_query_args(collection, query, ignore_ids):
     else:
         # Search for last tweet of this country, so we look for tweets
         # newer than it
-        tweet = collection.find_one(
-            {},
-            sort=[("tweet.id", pymongo.DESCENDING)])
-
+        tweet = mongo.get_first_tweet_id(query, collection)
         if tweet:
             args["since_id"] = tweet["id"]
             print("Tweet with min_id {} found".format(args["since_id"]))
         # Search for first tweet of this country, so we look tweets older than
         # it
-        tweet = collection.find_one(
-            {},
-            sort=[("tweet.id", pymongo.ASCENDING)])
+        tweet = mongo.get_last_tweet_id(query, collection)
 
         if tweet:
             args["max_id"] = tweet["id"]
