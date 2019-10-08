@@ -12,7 +12,7 @@ def setup(collection):
     except:
         print("index already created")
 
-def get_last_tweet_id(collection):
+def get_last_tweet_id(query, collection):
     return db[collection].find_one({"query": query},sort=[("tweet_id", pymongo.DESCENDING)])
 
 def get_first_tweet_id(query, collection):
