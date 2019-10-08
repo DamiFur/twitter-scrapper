@@ -41,7 +41,8 @@ def store_with_attributes(tweet_object, query, collection):
         except Exception as e:
             print("Excepción guardando usuario: {}".format(e))
             continue
-    print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
+    if query != "streaming":
+        print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
 
 
 def get_query_args(collection, query, mode, ignore_ids):
@@ -95,9 +96,6 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
 
         mongo.setup(keyword)
 
-        collector_stream = tweepyrate.collector.StreamingCollector(keyword, queries, fetcher, 15)
-        collector_stream.start()
-
         if with_users:
             positive_users = UserCollector(True, keyword).collect_users()
             negative_users = UserCollector(False, keyword).collect_users()
@@ -136,6 +134,8 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
             collector_negative_past.start()
 
 
+        collector_stream = tweepyrate.collector.StreamingCollector(keyword, queries, fetcher, 15)
+        collector_stream.start()
 
 if __name__ == '__main__':
     fire.Fire(collect_with_query_and_users)
