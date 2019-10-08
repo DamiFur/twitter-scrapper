@@ -73,8 +73,6 @@ def get_query_args(collection, query, ignore_ids):
             print("Tweet with max_id {} found".format(args["max_id"]))
         else:
             print("No tweet found with this search")
-    else:
-        raise ValueError("mode should be new or past")
 
     return args
 
