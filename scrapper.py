@@ -16,20 +16,19 @@ class UserCollector:
             return json.load(f)
 
 # fuction to extract data from tweet object
-def store_with_attributes(tweet_object, query, collection):
+def store_with_attributes(tweet_object, query, collection, no_need_to_check=False):
     #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
     # loop through tweet objects
     stored = 0
     for tweet in tweet_object:
         user = tweet.user._json
         try:
-            if (not mongo.check_if_exists({"tweet.id": tweet.id}, collection)):
+            if no_need_to_check or (not mongo.check_if_exists({"tweet.id": tweet.id}, collection)):
                 # append attributes to list
                 mongo.store({'tweet':tweet._json,
                                   'user':user['id'],
                                   'query':query}, collection)
                 tweet_json = tweet._json
-                print("Guardamos un tweet {}".format(tweet_json["id"]))
                 stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
