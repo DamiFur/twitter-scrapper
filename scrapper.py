@@ -29,6 +29,7 @@ def store_with_attributes(tweet_object, query, collection):
                                   'user':user['id'],
                                   'query':query}, collection)
                 tweet_json = tweet._json
+                print("Guardamos un tweet")
                 stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
@@ -101,12 +102,12 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
 
         for query in queries:
 
-            args_for_all = get_query_args(query, query, True)
+            args_for_all = get_query_args(query, query, False)
             collector_all = tweepyrate.collector.Collector(keyword, fetcher, 60, **args_for_all)
             collector_all_past = tweepyrate.collector.PastTweetsCollector(keyword, fetcher, 10, **args_for_all)
             collector_all_new = tweepyrate.collector.NewTweetsCollector(keyword, fetcher, 10, **args_for_all)
             
-            collector_all.start()
+            # collector_all.start()
             collector_all_new.start()
             collector_all_past.start()
 
