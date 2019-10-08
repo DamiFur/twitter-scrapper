@@ -56,7 +56,7 @@ def get_query_args(collection, query, ignore_ids):
         # newer than it
         try:
             tweet = mongo.get_first_tweet_id(query, collection)
-            print("TWEET ES {}".format(tweet))
+            print("TWEET ES {} para query {} en la coleccion {}".format(tweet, query, collection))
         except Exception as e:
             print("EXCEPTION {}".format(str(e)))
         if tweet:
