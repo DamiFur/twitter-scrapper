@@ -59,7 +59,7 @@ def get_query_args(collection, query, ignore_ids):
         except Exception as e:
             print("EXCEPTION {}".format(str(e)))
         if tweet:
-            args["since_id"] = tweet["id"]
+            args["since_id"] = tweet.id
             print("Tweet with min_id {} found".format(args["since_id"]))
         # Search for first tweet of this country, so we look tweets older than
         # it
@@ -69,7 +69,7 @@ def get_query_args(collection, query, ignore_ids):
         except Exception as e:
             print("EXCEPTION {}".format(str(e)))
         if tweet:
-            args["max_id"] = tweet["id"]
+            args["max_id"] = tweet.id
             print("Tweet with max_id {} found".format(args["max_id"]))
         else:
             print("No tweet found with this search")
