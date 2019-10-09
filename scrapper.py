@@ -80,7 +80,7 @@ def collect_queries(keyword):
 
 def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
     apps = tweepyrate.create_apps("config/my_apps.json")
-    fetcher = tweepyrate.collector.Fetcher(apps[:len(apps) - 2], apps[len(apps) - 2:], 10, store_with_attributes, 1000)
+    fetcher = tweepyrate.collector.Fetcher(apps[:len(apps) - 2], apps[len(apps) - 2:], 10, store_with_attributes, 300)
     #fetcher_users = tweepyrate.collector.Fetcher(apps[len(apps)-2:], 10, store_with_attributes, 100)
 
 
@@ -106,7 +106,7 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
             collector_all_past = tweepyrate.collector.PastTweetsCollector(keyword, fetcher, 10, **args_for_all)
             collector_all_new = tweepyrate.collector.NewTweetsCollector(keyword, fetcher, 10, **args_for_all)
             
-            # collector_all.start()
+            collector_all.start()
             collector_all_new.start()
             collector_all_past.start()
 
