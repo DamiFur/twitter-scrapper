@@ -24,19 +24,17 @@ def store_with_attributes(tweet_object, query, collection, no_need_to_check=Fals
         user = tweet.user._json
         tweet_json = tweet._json
         try:
-            if no_need_to_check or (not mongo.check_if_exists({"tweet.id": tweet.id}, collection)):
-                # append attributes to list
-                mongo.store({'tweet':tweet_json,
-                                  'user':user['id'],
-                                  'query':query}, collection)
-                stored += 1
+            # append attributes to list
+            mongo.store({'tweet':tweet_json,
+                              'user':user['id'],
+                              'query':query}, collection)
+            stored += 1
         except Exception as e:
             print("Exception storing in mongo: {}".format(str(e)))
             continue
         try:
-            if not mongo.check_if_exists({"id": user["id"]}, 'users'):
-                mongo.store(user, 'users')
-            if tweet_json["retweeted"] and (not mongo.check_if_exists({"id": tweet_json["retweeted_status"]["user"]["id"]}, 'users')):
+            mongo.store(user, 'users')
+            if tweet_json["retweeted"]:
                 mongo.store(tweet_json["retweeted_status"]["user"], 'users')
         except Exception as e:
             print("Excepción guardando usuario: {}".format(e))
@@ -92,7 +90,8 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
         print("Queries para la keyword {}: {}".format(keyword, queries))
         # setup de mongo
 
-        mongo.setup(keyword)
+        mongo.setup_tweets(keyword)
+        mongo.setup_users()
 
         if with_users:
             positive_users = UserCollector(True, keyword).collect_users()
