@@ -80,7 +80,7 @@ def collect_queries(keyword):
 
 def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
     apps = tweepyrate.create_apps("config/my_apps.json")
-    fetcher = tweepyrate.collector.Fetcher(apps[:len(apps) - 2], apps[len(apps) - 2:], 15, store_with_attributes, 300)
+    fetcher = tweepyrate.collector.Fetcher(apps[len(apps) - 2:], apps[:len(apps) - 2], 15, store_with_attributes, 300)
     #fetcher_users = tweepyrate.collector.Fetcher(apps[len(apps)-2:], 10, store_with_attributes, 100)
 
 
