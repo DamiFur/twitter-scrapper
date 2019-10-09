@@ -30,14 +30,14 @@ def store_with_attributes(tweet_object, query, collection, no_need_to_check=Fals
                               'query':query}, collection)
             stored += 1
         except Exception as e:
-            print("Exception storing in mongo: {}".format(str(e)))
+            #print("Exception storing in mongo: {}".format(str(e)))
             continue
         try:
             mongo.store(user, 'users')
             if tweet_json["retweeted"]:
                 mongo.store(tweet_json["retweeted_status"]["user"], 'users')
         except Exception as e:
-            print("Excepción guardando usuario: {}".format(e))
+            #print("Excepción guardando usuario: {}".format(e))
             continue
     if query != "streaming":
         print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
