@@ -37,7 +37,7 @@ def check_if_exists(query, collection):
 
 
 def removeDuplicates(collection):
-    db[collection + "_unique"].create_index(tweet.id, unique=True)
+    db[collection + "_unique"].create_index("tweet.id", unique=True)
     removed = 0
     for tweet in db[collection].find():
         try:
