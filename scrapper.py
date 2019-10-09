@@ -106,7 +106,7 @@ def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
             collector_all_past = tweepyrate.collector.PastTweetsCollector(keyword, fetcher, 10, **args_for_all)
             collector_all_new = tweepyrate.collector.NewTweetsCollector(keyword, fetcher, 10, **args_for_all)
             
-            collector_all.start()
+            #collector_all.start()
             collector_all_new.start()
             collector_all_past.start()
 
