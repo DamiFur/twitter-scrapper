@@ -53,7 +53,7 @@ def get_query_args(collection, query, ignore_ids):
         # Search for last tweet of this country, so we look for tweets
         # newer than it
         try:
-            tweet = mongo.get_first_tweet_id(query, collection)
+            tweet = mongo.get_last_tweet_id(query, collection)
         except Exception as e:
             print("EXCEPTION {}".format(str(e)))
         if tweet:
@@ -63,7 +63,7 @@ def get_query_args(collection, query, ignore_ids):
         # it
         
         try:
-            tweet = mongo.get_last_tweet_id(query, collection)
+            tweet = mongo.get_first_tweet_id(query, collection)
         except Exception as e:
             print("EXCEPTION {}".format(str(e)))
         if tweet:
