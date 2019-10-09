@@ -41,7 +41,7 @@ def removeDuplicates(collection):
     removed = 0
     for tweet in db[collection].find():
         try:
-            if not check_if_exists({"tweet.id": tweet.id}, collection + "_unique"):
+            if not check_if_exists({"tweet.id": tweet['tweet']['id']}, collection + "_unique"):
                 store(tweet, collection + "_unique")
             else:
                 removed += 1
