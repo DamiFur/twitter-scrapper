@@ -1,5 +1,5 @@
 import tweepy
-import mongo 
+import mongo
 import time
 import json
 from tweepyrate import tweepyrate
@@ -15,32 +15,37 @@ class UserCollector:
         with open("config/{}_users_{}.json".format(self.query, self.position)) as f:
             return json.load(f)
 
-# fuction to extract data from tweet object
-def store_with_attributes(tweet_object, query, collection, no_need_to_check=False):
-    #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
-    # loop through tweet objects
-    stored = 0
-    for tweet in tweet_object:
-        user = tweet.user._json
-        tweet_json = tweet._json
-        try:
-            # append attributes to list
-            mongo.store({'tweet':tweet_json,
-                              'user':user['id'],
-                              'query':query}, collection)
-            stored += 1
-        except Exception as e:
-            #print("Exception storing in mongo: {}".format(str(e)))
-            continue
-        try:
-            mongo.store(user, 'users')
-            if tweet_json["retweeted"]:
-                mongo.store(tweet_json["retweeted_status"]["user"], 'users')
-        except Exception as e:
-            #print("Excepción guardando usuario: {}".format(e))
-            continue
-    if query != "streaming":
-        print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
+
+def store_with_attributes_on_db(db):
+
+    # fuction to extract data from tweet object
+    def store_with_attributes(tweet_object, query, collection, no_need_to_check=False):
+        #TODO: Cambiar Collection por Query + Suffix y agregar que chequee que la query esté presente en lo que quiere guardar
+        # loop through tweet objects
+        stored = 0
+        for tweet in tweet_object:
+            user = tweet.user._json
+            tweet_json = tweet._json
+            try:
+                # append attributes to list
+                db.store({'tweet':tweet_json,
+                                  'user':user['id'],
+                                  'query':query}, collection)
+                stored += 1
+            except Exception as e:
+                #print("Exception storing in mongo: {}".format(str(e)))
+                continue
+            try:
+                db.store(user, 'users')
+                if tweet_json["retweeted"]:
+                    db.store(tweet_json["retweeted_status"]["user"], 'users')
+            except Exception as e:
+                #print("Excepción guardando usuario: {}".format(e))
+                continue
+        if query != "streaming":
+            print("Stored {} tweets for query {} in collection {}. {} were excluded".format(str(stored), query, collection, str(len(tweet_object) - stored)))
+
+    return store_with_attributes
 
 
 def get_query_args(collection, query, ignore_ids):
@@ -78,33 +83,35 @@ def collect_queries(keyword):
     with open("config/{}_queries.json".format(keyword)) as f:
        return json.load(f)
 
-def collect_with_query_and_users(keywords=[], with_users=False, mode="all"):
-    apps = tweepyrate.create_apps("config/my_apps.json")
-    fetcher = tweepyrate.collector.Fetcher(apps[2:], apps[:2], 15, store_with_attributes, 300)
-    #fetcher_users = tweepyrate.collector.Fetcher(apps[len(apps)-2:], 10, store_with_attributes, 100)
+def collect_with_query_and_users(keywords=[], with_users=False, mode="all", apps_suffix="", database=""):
+    db = mongo.Database(database)
+
+    apps = tweepyrate.create_apps("config/my_apps{}.json".format(apps_suffix))
+    fetcher = tweepyrate.collector.Fetcher(apps[1:], apps[:1], 10, store_with_attributes(db), 5000)
 
 
     for keyword in keywords:
 
         queries = collect_queries(keyword)
-        print("Queries para la keyword {}: {}".format(keyword, queries))
+        print("Queries for keyword {}: {}".format(keyword, queries))
         # setup de mongo
 
-        mongo.setup_tweets(keyword)
-        mongo.setup_users()
+        db.setup_tweets(keyword)
+        db.setup_users()
 
         if with_users:
             positive_users = UserCollector(True, keyword).collect_users()
             negative_users = UserCollector(False, keyword).collect_users()
-            mongo.setup(keyword + "-Positive")
-            mongo.setup(keyword + "-Negative")
+            db.setup(keyword + "-Positive")
+            db.setup(keyword + "-Negative")
 
         for query in queries:
 
-            args_for_all = get_query_args(keyword, query, False)
+            args_for_time = get_query_args(keyword, query, False)
+            args_for_all = get_query_args(keyword, query, True)
             collector_all = tweepyrate.collector.Collector(keyword, fetcher, 60, **args_for_all)
-            collector_all_past = tweepyrate.collector.PastTweetsCollector(keyword, fetcher, 10, **args_for_all)
-            collector_all_new = tweepyrate.collector.NewTweetsCollector(keyword, fetcher, 10, **args_for_all)
+            collector_all_past = tweepyrate.collector.PastTweetsCollector(keyword, fetcher, 0, **args_for_time)
+            collector_all_new = tweepyrate.collector.NewTweetsCollector(keyword, fetcher, 0, **args_for_time)
             
             #collector_all.start()
             collector_all_new.start()
